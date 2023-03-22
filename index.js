@@ -1,12 +1,12 @@
 const querystring = require('node:querystring')
 
-module.exports = async function(google, subject, scopes) {
-    const auth = new google.auth.GoogleAuth({ scopes: 'https://www.googleapis.com/auth/cloud-platform' })
-    const authClient = await auth.getClient()
-    if (authClient instanceof google.auth.JWT) {
-        return await new google.auth.GoogleAuth({ scopes, clientOptions: { subject } }).getClient()
-    } else if (authClient instanceof google.auth.Compute) {
-        const serviceAccountEmail = (await auth.getCredentials()).client_email
+module.exports = async function(auth, iam, subject, scopes) {
+    const gauth = new auth.GoogleAuth({ scopes: 'https://www.googleapis.com/auth/cloud-platform' })
+    const authClient = await gauth.getClient()
+    if (authClient instanceof auth.JWT) {
+        return await new auth.GoogleAuth({ scopes, clientOptions: { subject } }).getClient()
+    } else if (authClient instanceof auth.Compute) {
+        const serviceAccountEmail = (await gauth.getCredentials()).client_email
         const unpaddedB64encode = (input) => Buffer.from(input).toString('base64').replace(/=*$/, '')
         const now = Math.floor(new Date().getTime() / 1000)
         const expiry = now + 3600
@@ -23,7 +23,7 @@ module.exports = async function(google, subject, scopes) {
             typ: 'JWT',
         })
         const iamPayload = `${unpaddedB64encode(header)}.${unpaddedB64encode(payload)}`
-        const { data } = await google.iam('v1').projects.serviceAccounts.signBlob({
+        const { data } = await iam('v1').projects.serviceAccounts.signBlob({
             auth: authClient,
             name: `projects/-/serviceAccounts/${serviceAccountEmail}`,
             requestBody: {
@@ -34,7 +34,7 @@ module.exports = async function(google, subject, scopes) {
         const headers = { 'content-type': 'application/x-www-form-urlencoded' }
         const body = querystring.encode({ assertion, grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer' })
         const response = await fetch('https://accounts.google.com/o/oauth2/token', { method: 'POST', headers, body }).then(r => r.json())
-        const newCredentials = new google.auth.OAuth2Client()
+        const newCredentials = new auth.OAuth2Client()
         newCredentials.setCredentials({ access_token: response.access_token })
         return newCredentials
     } else {

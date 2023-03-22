@@ -40,21 +40,20 @@ Downside is that there can be no control of applicable versions.
 
 ```javascript
 const dwd = require('googleapis-dwd')
-const google = require('googleapis')
+const auth = require('google-auth-library')
+const { iam } = require('@googleapis/iam')
 
-const cred = await dwd(google, "test@domain.com", ["https://desired/scope"])
+const cred = await dwd(auth, iam, "test@domain.com", ["https://desired/scope"])
 // use cred to access user data
 google.gmail('v1', cred)
 ```
 
-Or, if you don't want to depend on the whole googleapis package:
+Or, if you want to depend on the whole googleapis package:
 
 ```javascript
 const dwd = require('googleapis-dwd')
-const auth = require('google-auth-library')
-const { iam } = require('@googleapis/iam')
-
-const cred = await dwd({iam, auth}, "test@domain.com", ["https://desired/scope"])
+const google = require('googleapis')
+const cred = await dwd(google.auth, google.iam, "test@domain.com", ["https://desired/scope"])
 // use cred to access user data
 google.gmail('v1', cred)
 ```
