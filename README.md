@@ -6,6 +6,7 @@ Applies to Google Run as well, maybe others too.
 
 Based on [SO answer](https://stackoverflow.com/a/60506185), which is based on [this answer](https://stackoverflow.com/a/57092533).
 
+
 ## Use case
 
 - service account with Domain-wide delegation enabled to access user data like calendar, drive, gmail, etc.
@@ -26,27 +27,6 @@ That scenario works when you test locally (with GOOGLE_APPLICATION_CREDENTIALS),
 }
 ```
 
-## Alternative
-
-You can utilize Application Default Credentials, but force it to use your json file.
-To be a good citizen, store your json file contents in Secret Manager.
-
-Then, in your deployment...
-
-```bash
-gcloud functions deploy ... \
- ... \
-  --set-secrets /etc/secrets/credential.json=YOUR-SECRET-NAME:latest \
-  --set-env-vars GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/credential.json
-```
-
-```javascript
-const subject = "your@email.address"
-const scopes = ["https://desired/scope", ..]
-const jwt = await new google.auth.GoogleAuth({ scopes, clientOptions: { subject } })
-// use jwt to access user data
-google.gmail('v1', jwt)
-```
 
 ## Install
 
@@ -79,6 +59,7 @@ const cred = await dwd({iam, auth}, "test@domain.com", ["https://desired/scope"]
 google.gmail('v1', cred)
 ```
 
+
 ## Requirements
 
 ### Roles 
@@ -108,3 +89,26 @@ where
 ### IAM api enabled
 
 `gcloud services enable iam.googleapis.com`
+
+
+## Alternative approach
+
+You can utilize Application Default Credentials, but force it to use your json file.
+To be a good citizen, store your json file contents in Secret Manager.
+
+Then, in your deployment...
+
+```bash
+gcloud functions deploy ... \
+ ... \
+  --set-secrets /etc/secrets/credential.json=YOUR-SECRET-NAME:latest \
+  --set-env-vars GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/credential.json
+```
+
+```javascript
+const subject = "your@email.address"
+const scopes = ["https://desired/scope", ..]
+const jwt = await new google.auth.GoogleAuth({ scopes, clientOptions: { subject } })
+// use jwt to access user data
+google.gmail('v1', jwt)
+```
