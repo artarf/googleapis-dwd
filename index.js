@@ -7,10 +7,7 @@ module.exports = async function(google, subject, scopes) {
         return await new google.auth.GoogleAuth({ scopes, clientOptions: { subject } }).getClient()
     } else if (authClient instanceof google.auth.Compute) {
         const serviceAccountEmail = (await auth.getCredentials()).client_email
-        const unpaddedB64encode = (input) =>
-            Buffer.from(input)
-                .toString('base64')
-                .replace(/=*$/, '')
+        const unpaddedB64encode = (input) => Buffer.from(input).toString('base64').replace(/=*$/, '')
         const now = Math.floor(new Date().getTime() / 1000)
         const expiry = now + 3600
         const payload = JSON.stringify({
