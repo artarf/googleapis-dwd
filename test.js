@@ -25,4 +25,6 @@ async function test() {
     assert.deepEqual(y.data.labels, z.data.labels)
 }
 
-await test()
+test().then(_ =>
+    console.log('End test')
+)
