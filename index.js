@@ -34,7 +34,8 @@ module.exports = async function(auth, iam, subject, scopes) {
         const headers = { 'content-type': 'application/x-www-form-urlencoded' }
         const body = querystring.encode({ assertion, grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer' })
         const response = await fetch('https://accounts.google.com/o/oauth2/token', { method: 'POST', headers, body }).then(r => r.json())
-        const newCredentials = new auth.OAuth2Client()
+        const OAuth2Client = auth.OAuth2Client || auth.OAuth2
+        const newCredentials = new OAuth2Client()
         newCredentials.setCredentials({ access_token: response.access_token })
         return newCredentials
     } else {
