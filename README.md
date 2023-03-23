@@ -1,4 +1,4 @@
-# googleapis-dwd,
+# googleapis-dwd
 
 Authorize Google Functions to use domain wide delegation (act as a user)
 
@@ -6,11 +6,19 @@ Applies to Google Run as well, maybe others too.
 
 Based on [SO answer](https://stackoverflow.com/a/60506185), which is based on [this answer](https://stackoverflow.com/a/57092533).
 
+You would expect that when _domain wide delegation_ is enabled for a service account,
+you could easily use it in _cloud functions_ to access user data from gmail, calendar, drive, etc.
+Just create new token with impersonated a user and correct scopes.
+That is not the case. New token must be signed with _service account_'s private key
+and it is not recommended to spread the key around.
+
+This library provides a way to call _google cloud_ to sign the new key - without 
+any need to access the private key inside the function.
 
 ## Use case
 
-- service account with Domain-wide delegation enabled to access user data like calendar, drive, gmail, etc.
-- want to use that service account in a cloud function or cloud run
+- _service account_ with **domain wide delegation** enabled to access user data like calendar, drive, gmail, etc.
+- want to use that _service account_ in a _cloud function_ or _cloud run_ to access user data
 - do NOT want to use service account json file, because that might be a *security risk*.
 
 That scenario works when you test locally (with GOOGLE_APPLICATION_CREDENTIALS), but fails when deployed to the cloud.
