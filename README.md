@@ -38,7 +38,14 @@ That scenario works when you test locally (with GOOGLE_APPLICATION_CREDENTIALS),
 
 ## Install
 
-`npm install googleapis-dwd`
+Not yet published to npm, use github dependencies:
+```json
+{
+  "dependencies": {
+    "googleapis-dwd": "artarf/googleapis-dwd"
+  }
+}
+```
 
 ## Usage
 
