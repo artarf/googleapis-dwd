@@ -23,7 +23,7 @@ any need to access the private key inside the function.
 
 That scenario works when you test locally (with GOOGLE_APPLICATION_CREDENTIALS), but fails when deployed to the cloud.
 
-```javascript
+```json
 {
   "code" : 400,
   "errors" : [ {
@@ -54,7 +54,7 @@ const dwd = require('googleapis-dwd')
 
 const cred = await dwd("test@domain.com", ["https://desired/scope"])
 // use cred to access user data
-google.gmail('v1', cred)
+const result = await google.gmail({version: 'v1', auth: cred}).users.labels.list({userId: 'me'})
 ```
 
 ## Requirements
@@ -91,7 +91,7 @@ where
 ## Alternative approach
 
 You can utilize Application Default Credentials, but force it to use your json file.
-To be a good citizen, store your json file contents in Secret Manager.
+To be a good citizen, store your entire json file contents in Secret Manager.
 
 Then, in your deployment...
 
@@ -107,5 +107,5 @@ const subject = "your@email.address"
 const scopes = ["https://desired/scope", ..]
 const jwt = await new google.auth.GoogleAuth({ scopes, clientOptions: { subject } })
 // use jwt to access user data
-google.gmail('v1', jwt)
+const result = await google.gmail({version: 'v1', auth: jwt}).users.labels.list({userId: 'me'})
 ```
