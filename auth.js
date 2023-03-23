@@ -1,4 +1,5 @@
 const querystring = require('node:querystring')
+const { IAMCredentialsClient } = require('@google-cloud/iam-credentials').v1
 
 const unpad = (input) => input.replace(/=*$/, '')
 
@@ -19,16 +20,15 @@ function getPayload(email, subject, scopes) {
 
 const header = JSON.stringify({ alg: 'RS256', typ: 'JWT' })
 
-async function sign(iam, authClient, email, payload) {
+async function sign(authClient, email, payload) {
+    const credentialsClient = new IAMCredentialsClient();
     const body = {
         auth: authClient,
         name: `projects/-/serviceAccounts/${email}`,
-        requestBody: {
-            bytesToSign: unpaddedB64encode(payload),
-        },
+        payload: unpaddedB64encode(payload),
     }
-    const result = await iam('v1').projects.serviceAccounts.signBlob(body)
-    return unpad(result.data.signature)
+    const [result] = await credentialsClient.signBlob(body)
+    return unpad(result.signedBlob.toString('base64'))
 }
 
 async function token(payload, signature) {
@@ -41,9 +41,9 @@ async function token(payload, signature) {
     return respbody.access_token;
 }
 
-async function generateAuth(auth, iam, authClient, email, subject, scopes) {
+async function generateAuth(auth, authClient, email, subject, scopes) {
     const iamPayload = `${unpaddedB64encode(header)}.${getPayload(email, subject, scopes)}`
-    const signature = await sign(iam, authClient, email, iamPayload)
+    const signature = await sign(authClient, email, iamPayload)
     const access_token = await token(iamPayload, signature)
     const OAuth2Client = auth.OAuth2Client || auth.OAuth2
     const newCredentials = new OAuth2Client()

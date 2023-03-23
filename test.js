@@ -12,13 +12,13 @@ async function test() {
     const scopes = [ "https://www.googleapis.com/auth/gmail.readonly" ]
     const generateAuth = require('./auth.js')
 
-    let auth = await generateAuth(google.auth, google.iam, authClient, email, subject, scopes)
+    let auth = await generateAuth(google.auth, authClient, email, subject, scopes)
     const x = await google.gmail({version:'v1', auth}).users.labels.list({userId:'me'})
 
-    auth = await generateAuth(require('google-auth-library'), require('@googleapis/iam').iam, authClient, email, subject, scopes)
+    auth = await generateAuth(require('google-auth-library'), authClient, email, subject, scopes)
     const y = await google.gmail({version:'v1', auth}).users.labels.list({userId:'me'})
 
-    auth = await require('./index.js')(google.auth, google.iam, subject, scopes)
+    auth = await require('./index.js')(google.auth, subject, scopes)
     const z = await google.gmail({version:'v1', auth}).users.labels.list({userId:'me'})
 
     assert.deepEqual(x.data.labels, y.data.labels)
