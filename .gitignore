@@ -1,2 +1,4 @@
 .editorconfig
+.envrc
 node_modules
+credentials.json
