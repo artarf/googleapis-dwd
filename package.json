@@ -15,10 +15,10 @@
   "author": "Arto Arffman",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/iam-credentials": "^2.0.3"
+    "@google-cloud/iam-credentials": "^2.0.3",
+    "google-auth-library": "^8.7.0"
   },
   "devDependencies": {
-    "google-auth-library": "^8.7.0",
     "googleapis": "^113.0.0"
   }
 }

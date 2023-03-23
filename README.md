@@ -49,29 +49,13 @@ Not yet published to npm, use github dependencies:
 
 ## Usage
 
-This package does not depend on google libraries, those are delivered in the call. 
-This way versions will be exactly the same. 
-Downside is that there can be no control of applicable versions.
-
 ```javascript
 const dwd = require('googleapis-dwd')
-const auth = require('google-auth-library')
 
-const cred = await dwd(auth, "test@domain.com", ["https://desired/scope"])
+const cred = await dwd("test@domain.com", ["https://desired/scope"])
 // use cred to access user data
 google.gmail('v1', cred)
 ```
-
-Or, if you want to depend on the whole googleapis package:
-
-```javascript
-const dwd = require('googleapis-dwd')
-const google = require('googleapis')
-const cred = await dwd(google.auth, "test@domain.com", ["https://desired/scope"])
-// use cred to access user data
-google.gmail('v1', cred)
-```
-
 
 ## Requirements
 

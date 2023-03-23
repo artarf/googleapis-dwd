@@ -1,11 +1,13 @@
-module.exports = async function(auth, subject, scopes) {
-    const gauth = new auth.GoogleAuth({ scopes: 'https://www.googleapis.com/auth/cloud-platform' })
+const { GoogleAuth, Compute, JWT } = require('google-auth-library')
+
+module.exports = async function(subject, scopes) {
+    const gauth = new GoogleAuth({ scopes: 'https://www.googleapis.com/auth/cloud-platform' })
     const authClient = await gauth.getClient()
-    if (authClient instanceof auth.JWT) {
-        return await new auth.GoogleAuth({ scopes, clientOptions: { subject } }).getClient()
-    } else if (authClient instanceof auth.Compute) {
+    if (authClient instanceof JWT) {
+        return await new GoogleAuth({ scopes, clientOptions: { subject } }).getClient()
+    } else if (authClient instanceof Compute) {
         const email = (await gauth.getCredentials()).client_email
-        return require('./auth')(auth, authClient, email, subject, scopes)
+        return require('./auth')(authClient, email, subject, scopes)
     } else {
         throw new Error('Unexpected authentication type')
     }

@@ -1,5 +1,6 @@
 const querystring = require('node:querystring')
 const { IAMCredentialsClient } = require('@google-cloud/iam-credentials').v1
+const { OAuth2Client } = require('google-auth-library')
 
 const unpad = (input) => input.replace(/=*$/, '')
 
@@ -41,11 +42,10 @@ async function token(payload, signature) {
     return respbody.access_token;
 }
 
-async function generateAuth(auth, authClient, email, subject, scopes) {
+async function generateAuth(authClient, email, subject, scopes) {
     const iamPayload = `${unpaddedB64encode(header)}.${getPayload(email, subject, scopes)}`
     const signature = await sign(authClient, email, iamPayload)
     const access_token = await token(iamPayload, signature)
-    const OAuth2Client = auth.OAuth2Client || auth.OAuth2
     const newCredentials = new OAuth2Client()
     newCredentials.setCredentials({ access_token })
     return newCredentials
